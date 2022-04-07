@@ -1,0 +1,58 @@
+version: '3'
+networks:
+  flask-nginx:
+services:
+  flaskapp_robot:
+    image: my_flaskapp_robot:0.8
+    build: ./flaskapp_robot
+    container_name: flask_robot
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - flask-nginx
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=flask_robot_0.8
+  flaskapp_hmi:
+    image: my_flaskapp_hmi:0.8
+    build: ./flaskapp_hmi
+    container_name: flask_hmi
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - flask-nginx
+    ports:
+      - "8001:8001"
+    environment:
+      - APP_NAME=flask_hmi_0.8
+  flaskapp_vision:
+    image: my_flaskapp_vision:0.8
+    build: ./flaskapp_vision
+    container_name: flask_vision
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - flask-nginx
+    ports:
+      - "8002:8002"
+    environment:
+      - APP_NAME=flask_vision_0.8
+  nginx:
+    image: my_nginx:1.9
+    build: ./nginx
+    container_name: nginx
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - flask-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - flaskapp_robot
+      - flaskapp_hmi
+      - flaskapp_vision
